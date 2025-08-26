@@ -14,8 +14,18 @@ public class Member {
 	private String hobby;
 	private Date enrollDate;
 
+	// 생성자
 	public Member() {
+	}
 
+	public Member(String memberId, String memberPwd, String email, String phone, String address, String hobby) {
+		super();
+		this.memberId = memberId;
+		this.memberPwd = memberPwd;
+		this.email = email;
+		this.phone = phone;
+		this.address = address;
+		this.hobby = hobby;
 	}
 
 	public Member(String memberId, String memberPwd, String memberName, char gender, int age, String email,
@@ -32,6 +42,23 @@ public class Member {
 		this.hobby = hobby;
 	}
 
+	public Member(String memberId, String memberPwd, String memberName, char gender, int age, String email,
+			String phone, String address, String hobby, Date enrollDate) {
+		super();
+		this.memberId = memberId;
+		this.memberPwd = memberPwd;
+		this.memberName = memberName;
+		this.gender = gender;
+		this.age = age;
+		this.email = email;
+		this.phone = phone;
+		this.address = address;
+		this.hobby = hobby;
+		this.enrollDate = enrollDate;
+	}
+
+	// 메소드
+	// getter/setter
 	public String getMemberId() {
 		return memberId;
 	}
@@ -104,12 +131,12 @@ public class Member {
 		this.hobby = hobby;
 	}
 
-	public Date getErollDate() {
+	public Date getEnrollDate() {
 		return enrollDate;
 	}
 
-	public void setErollDate(Date erollDate) {
-		this.enrollDate = erollDate;
+	public void setEnrollDate(Date enrollDate) {
+		this.enrollDate = enrollDate;
 	}
 
 	@Override

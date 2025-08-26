@@ -8,80 +8,92 @@ import com.elon.jdbc.day02.stmt.member.model.vo.Member;
 
 public class MemberView {
 	private MemberController mController;
-
+	
 	public MemberView() {
 		mController = new MemberController();
 	}
-
-	// Run에서 시작한 메소드
+	
+	// Run에서 시작할 메소드
 	public void startProgram() {
 		Member member;
 		int result;
-		String id;
-		finish: while (true) {
+		String memberId;
+		finish:
+		while(true) {
 			int choice = this.printMenu();
-			switch (choice) {
-			case 1:
+			switch(choice) {
+			case 1 : 
 				member = addMember();
 				result = mController.registerMember(member);
-				if (result > 0) {
+				if(result > 0) {
 					printMessage("회원 가입완료");
-				} else {
+				}else {
 					printMessage("회원 가입이 완료되지 않았습니다.");
 				}
 				break;
-			case 2:
+			case 2 : 
 				List<Member> mList = mController.showMemberList();
 				printAllMember(mList);
 				break;
-			case 3:
-				id = inputMemberId();
-				member = mController.findOneById(id);
-				if (member != null) {
-					printOne(member);
-				} else {
-					printMessage("회원 정보가 존재하지 않습니다.");
+			case 3 : 
+				// 아이디 입력받기
+				memberId = inputMemberId();
+				// 디비에서 회원정보 가져오기
+				member = mController.findOneById(memberId);
+				// 출력하기
+				printOne(member);
+				break;
+			case 4 : 
+				// 아이디 입력받기
+				memberId = inputMemberId();
+				member = mController.findOneById(memberId);
+				if(member != null) {
+					// 수정할 정보 입력받기
+					member = modifyMember(memberId);
+					// 디비에서 정보 수정하도록 요청하기
+					result = mController.updateMember(member);
+					// 결과에 따른 메시지 출력하기
+					if(result > 0) {
+						printMessage("회원 정보 수정이 완료되었습니다.");
+					}else {
+						printMessage("회원 정보 수정이 완료되지 않았습니다.");
+					}
+				}else {
+					this.printMessage("해당 정보가 존재하지 않습니다.");
 				}
 				break;
-			case 4:
-				id = inputMemberId();
-				member = modifyMember(id);
-				result = mController.updateMember(member);
-				if (result > 0) {
-					printMessage("회원 정보 수정 완료");
-				} else {
-					printMessage("회원 정보가 수정되지 않았습니다.");
+			case 5 : 
+				// 아이디 입력받기
+				memberId = inputMemberId();
+				// 입력받은 아이디로 데이터가 있는지 조회해보기
+				member = mController.findOneById(memberId);
+				if(member != null) {
+					// 디비에서 정보 삭제하도록 요청하기
+					result = mController.deleteMember(memberId);
+					// 결과에 따른 메시지 출력하기
+					if(result > 0) {
+						printMessage("회원 정보 삭제가 완료되었습니다.");
+					}else {
+						this.printMessage("회원 정보 삭제가 완료되지 않았습니다.");
+					}
+				}else {
+					this.printMessage("해당 정보가 존재하지 않습니다.");
 				}
 				break;
-			case 5:
-				id = inputMemberId();
-				result = mController.deleteMember(id);
-				if (result > 0) {
-					printMessage("회원 정보 삭제 완료");
-				} else {
-					printMessage("회원 정보가 삭제되지 않았습니다.");
-				}
-				break;
-			case 0:
+			case 0 : 
 				printMessage("프로그램을 종료합니다.");
 				break finish;
-			default:
-				this.printMessage("1~5 사이의 숫자를 입력해주세요");
-
+			default : this.printMessage("1 ~ 5 사이의 수를 입력해주세요."); break;
 			}
 		}
-
 	}
-
-	// 아이디 검색시 아이디 입력받기
+	// 아이디 검색시 아디이 입력받기
 	private String inputMemberId() {
-		System.out.print("아이디 입력: ");
 		Scanner sc = new Scanner(System.in);
-		String id = sc.next();
-		return id;
+		System.out.print("아이디 입력 : ");
+		return sc.next();
 	}
-
-	// 학생 정보 추가시 학생 정보 입력받기
+	// 회원 정보 추가시 회원정보 입력받기
 	private Member addMember() {
 		Scanner sc = new Scanner(System.in);
 		System.out.println("====== 회원 정보 입력 ======");
@@ -92,7 +104,7 @@ public class MemberView {
 		System.out.print("이름: ");
 		String memberName = sc.next();
 		System.out.print("성별: ");
-		char gender = sc.next().charAt(0);
+		char gender = sc.next().toUpperCase().charAt(0);
 		System.out.print("나이: ");
 		int age = sc.nextInt();
 		System.out.print("이메일: ");
@@ -104,75 +116,49 @@ public class MemberView {
 		String address = sc.nextLine();
 		System.out.print("취미: ");
 		String hobby = sc.next();
-		Member member = new Member(memberId, memberPwd, memberName, gender, age, email, phone, address, hobby);
+		Member member = new Member(memberId, memberPwd
+				, memberName, gender, age
+				, email, phone, address, hobby);
 		return member;
 	}
-
-	// 학생 정보 수정시 수정정보 입력받기
+	// 회원 정보 수정시 수정정보 입력받기
 	private Member modifyMember(String memberId) {
 		Scanner sc = new Scanner(System.in);
-		System.out.println("======" + memberId + "님의 회원 정보 수정 ======");
-		System.out.print("비밀번호: ");
+		System.out.print("수정할 비밀번호 입력 : ");
 		String memberPwd = sc.next();
-		System.out.print("이름: ");
-		String memberName = sc.next();
-		System.out.print("성별: ");
-		char gender = sc.next().charAt(0);
-		System.out.print("나이: ");
-		int age = sc.nextInt();
-		System.out.print("이메일: ");
+		System.out.print("수정할 이메일 입력 : ");
 		String email = sc.next();
-		System.out.print("전화번호: ");
+		System.out.print("수정할 전화번호 입력 : ");
 		String phone = sc.next();
-		System.out.print("주소: ");
-		sc.nextLine();
+		System.out.print("수정할 주소 입력 : ");
+		sc.nextLine(); // 개행 제거
 		String address = sc.nextLine();
-		System.out.print("취미: ");
+		System.out.print("수정할 취미 입력 : ");
 		String hobby = sc.next();
-		Member member = new Member(memberId, memberPwd, memberName, gender, age, email, phone, address, hobby);
+		Member member = new Member(memberId, memberPwd
+				, email, phone, address, hobby);
 		return member;
 	}
-
-	// 학생 1개 정보 출력
+	// 회원 1개 정보 출력
 	private void printOne(Member member) {
-		System.out.println("======" + member.getMemberName() + "님의 회원 정보 ======");
-		System.out.println("아이디: " + member.getMemberId());
-		System.out.println("비밀번호: " + member.getMemberPwd());
-		System.out.println("성별: " + member.getGender());
-		System.out.println("나이: " + member.getAge());
-		System.out.println("이메일: " + member.getEmail());
-		System.out.println("연락처: " + member.getPhone());
-		System.out.println("주소: " + member.getAddress());
-		System.out.println("취미: " + member.getHobby());
-		System.out.println("기념일: " + member.getErollDate());
-		System.out.println("====================");
+		System.out.println("====== 검색한 회원 정보 ======");
+		System.out.println("아이디\t\t이름\t\t이메일\t\t\t전화번호\t\t주소");
+		System.out.println(member.getMemberId()+"\t"+member.getMemberName()
+			+"\t\t"+member.getEmail()+"\t"+member.getPhone()+"\t\t"+member.getAddress());
 	}
-
-	// 학생 전체 정보 출력
+	// 회원 전체 정보 출력
 	private void printAllMember(List<Member> mList) {
-		System.out.println("====== 회원 전체 정보 출력 ======");
-		for (Member member : mList) {
-			System.out.println("아이디: " + member.getMemberId());
-			System.out.println("비밀번호: " + member.getMemberPwd());
-			System.out.println("이름: " + member.getMemberName());
-			System.out.println("성별: " + member.getGender());
-			System.out.println("나이: " + member.getAge());
-			System.out.println("이메일: " + member.getEmail());
-			System.out.println("연락처: " + member.getPhone());
-			System.out.println("주소: " + member.getAddress());
-			System.out.println("취미: " + member.getHobby());
-			System.out.println("기념일: " + member.getErollDate());
-			System.out.println("====================");
-		}
-
+		System.out.println("====== 회원 전체 정보 ======");
+		System.out.println("아이디\t\t이름\t\t이메일\t\t\t전화번호\t\t주소");
+		for(Member member: mList) {
+			System.out.println(member.getMemberId()+"\t"+member.getMemberName()
+				+"\t\t"+member.getEmail()+"\t"+member.getPhone()+"\t\t"+member.getAddress());
+		}		
 	}
-
 	// 메시지 출력
 	private void printMessage(String message) {
 		System.out.println(message);
-
 	}
-
 	// 메뉴 출력
 	private int printMenu() {
 		Scanner sc = new Scanner(System.in);
@@ -184,8 +170,12 @@ public class MemberView {
 		System.out.println("5. 회원 정보 삭제");
 		System.out.println("0. 프로그램 종료");
 		System.out.print("메뉴 선택 : ");
-		int menu = sc.nextInt();
-		return menu;
+		return sc.nextInt();
+		// 1. 회원가입
+		// 2. 회원 전체 조회
+		// 3. 회원 검색(아이디)
+		// 4. 회원 정보 수정
+		// 5. 회원 정보 삭제
+		// 0. 프로그램 종료
 	}
-
 }

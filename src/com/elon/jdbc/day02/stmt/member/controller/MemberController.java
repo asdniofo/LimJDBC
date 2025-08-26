@@ -1,6 +1,7 @@
 package com.elon.jdbc.day02.stmt.member.controller;
 
 import java.util.List;
+
 import com.elon.jdbc.day02.stmt.member.model.dao.MemberDAO;
 import com.elon.jdbc.day02.stmt.member.model.vo.Member;
 
@@ -12,8 +13,7 @@ public class MemberController {
 	}
 
 	public Member findOneById(String memberId) {
-		Member member = mDao.selectOneById(memberId);
-		return member;
+		return mDao.selectOneById(memberId);
 	}
 
 	public List<Member> showMemberList() {
@@ -32,8 +32,6 @@ public class MemberController {
 	}
 
 	public int deleteMember(String memberId) {
-		int result = mDao.deleteMember(memberId);
-		return result;
+		return mDao.deleteMember(memberId);
 	}
-
 }
